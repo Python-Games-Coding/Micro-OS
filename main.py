@@ -1,9 +1,10 @@
-import os
 from tkinter import *
 import time
 import random
 from PIL import Image as PILImage, ImageTk, ImageSequence
 import pygame
+from System import explorer as exp
+import os
 
 # Create a class for the main window
 class MainWin:
@@ -11,10 +12,11 @@ class MainWin:
         self.tk = Tk()
         self.tk.title("Micro OS 1.0")
         self.tk.geometry("1920x1080")
+        self.tk.config(cursor="none") # Hide the mouse cursor
         self.c = Canvas(self.tk, bg="black", height=1080, width=1920)
         
         # Load the GIF image using PIL and resize it
-        self.gif = PILImage.open("os/Boot/StartUp/Win11Dark/loading-win11Dark.gif")
+        self.gif = PILImage.open("System/Boot/StartUp/Win11Dark/loading-win11Dark.gif")
         self.frames = [ImageTk.PhotoImage(frame.resize((50, 50), PILImage.LANCZOS)) for frame in ImageSequence.Iterator(self.gif)]
         self.frame_index = 0
         
@@ -26,7 +28,7 @@ class MainWin:
         self.image_on_canvas = self.c.create_image(gif_x_position, gif_y_position, image=self.frames[self.frame_index], anchor=NW)
         
         # Load the PNG image using PIL and resize it
-        self.logo = PILImage.open("os/Boot/StartUp/logo.png")
+        self.logo = PILImage.open("System/Boot/StartUp/logo.png")
         self.logo = self.logo.resize((200, 200), PILImage.LANCZOS)
         self.logo_image = ImageTk.PhotoImage(self.logo)
         
@@ -57,13 +59,13 @@ class MainWin:
         self.c.itemconfig(self.logo_on_canvas, state='hidden')
         
         # Change the background to a new image
-        self.bg_image = PILImage.open("os/images/bg.jpg")
+        self.bg_image = PILImage.open("System/images/bg.jpg")
         self.bg_image = self.bg_image.resize((1920, 1080), PILImage.LANCZOS)
         self.bg_image_tk = ImageTk.PhotoImage(self.bg_image)
         self.c.create_image(0, 0, image=self.bg_image_tk, anchor=NW)
         
         # Load and display the user image
-        self.user_image = PILImage.open("os/Icons/users.png")
+        self.user_image = PILImage.open("System/Icons/users.png")
         self.user_image = self.user_image.resize((300, 300), PILImage.LANCZOS)
         self.user_image_tk = ImageTk.PhotoImage(self.user_image)
         user_x_position = (1920 - 300) // 2
@@ -72,13 +74,13 @@ class MainWin:
         
         # Play the startup music
         pygame.mixer.init()
-        pygame.mixer.music.load("os/Boot/StartUp/startup.mp3")
+        pygame.mixer.music.load("System/Boot/StartUp/startup.mp3")
         pygame.mixer.music.play()
         
         # Display the button in the middle-bottom position with transparent background
-        self.start_button_normal = self.load_image_with_transparency("os/System32/StartButton/Normal.png", (100, 100))
-        self.start_button_mouse_on = self.load_image_with_transparency("os/System32/StartButton/MouseOn.png", (100, 100))
-        self.start_button_clicked = self.load_image_with_transparency("os/System32/StartButton/Clicked.png", (100, 100))
+        self.start_button_normal = self.load_image_with_transparency("System/System32/StartButton/Normal.png", (100, 100))
+        self.start_button_mouse_on = self.load_image_with_transparency("System/System32/StartButton/MouseOn.png", (100, 100))
+        self.start_button_clicked = self.load_image_with_transparency("System/System32/StartButton/Clicked.png", (100, 100))
         
         button_x_position = (1920 - 100) // 2
         button_y_position = 1080 - 300
@@ -98,10 +100,10 @@ class MainWin:
     def on_button_click(self):
         print("Button clicked")
         self.start_button.destroy()
-        self.c.create_text(1920/2, 1080/2 + 100, text="Welcome", font=("Arial", 44), fill="white")
+        self.wel = self.c.create_text(1920/2, 1080/2 + 100, text="Welcome", font=("Arial", 44), fill="white")
         
         # Load and display the new GIF image
-        new_gif = PILImage.open("os/Boot/StartUp/Win10/loading-win10.gif")
+        new_gif = PILImage.open("System/Boot/StartUp/Win10/loading-win10.gif")
         new_frames = [ImageTk.PhotoImage(frame.resize((50, 50), PILImage.LANCZOS)) for frame in ImageSequence.Iterator(new_gif)]
         self.new_frame_index = 0
         new_gif_x_position = 1920 // 2 - 200
@@ -110,6 +112,13 @@ class MainWin:
         
         self.new_frames = new_frames
         self.animate_new_gif()
+        self.tk.after(random.randint(500, 4000), self.hide_new_gif)
+    def hide_new_gif(self):
+        self.c.itemconfig(self.new_image_on_canvas, state='hidden')
+        self.c.itemconfig(self.wel, state='hidden')
+        self.c.itemconfig(self.user_image_tk, state='hidden')
+        exp.taskbar(self.c)
+
 
     def animate_new_gif(self):
         self.new_frame_index = (self.new_frame_index + 1) % len(self.new_frames)
