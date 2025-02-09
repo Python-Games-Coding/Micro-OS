@@ -12,7 +12,6 @@ class MainWin:
         self.tk = Tk()
         self.tk.title("Micro OS 1.0")
         self.tk.geometry("1920x1080")
-        self.tk.config(cursor="none") # Hide the mouse cursor
         self.c = Canvas(self.tk, bg="black", height=1080, width=1920)
         
         # Load the GIF image using PIL and resize it
